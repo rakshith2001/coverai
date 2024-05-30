@@ -7,7 +7,7 @@ export const navLinks = [
     {
       label: "Profile",
       route: "/transformations/add/Profile",
-      icon: "/assets/icons/Profile.svg",
+      icon: "/assets/icons/image.svg",
     },
     {
       label: "Buy Credits",
