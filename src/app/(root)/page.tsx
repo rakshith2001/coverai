@@ -1,27 +1,36 @@
-"use client";
-
+"use client"
 import React, { useState, useEffect, useRef } from 'react';
+import { SignedIn, SignedOut } from "@clerk/nextjs";
 
-import { SignedIn, SignedOut } from "@clerk/nextjs"
-import {chatbot} from '@/chatbot/chatbot';
 const Home = () => {
-  
-
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const messagesEndRef = useRef(null);
-  
 
-
-
-  const handleSend = () => {
+  const handleSend = async () => {
     if (input.trim()) {
       setMessages([...messages, { sender: 'user', text: input }]);
       setInput('');
-      // Simulate a bot response
-      setTimeout(() => {
-        setMessages(prevMessages => [...prevMessages, { sender: 'bot', text: 'This is a response from the bot.' }]);
-      }, 1000);
+      try {
+        let req = await fetch('/api/chat', {
+          method: 'POST',
+          body: JSON.stringify({ message: input }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        if (req.ok) {
+          let res = await req.json();
+          setTimeout(() => {
+            setMessages(prevMessages => [...prevMessages, { sender: 'bot', text: res.message }]);
+          }, 1000);
+        } else {
+          throw new Error('Network response was not ok.');
+        }
+      } catch (error) {
+        console.error('Error sending message:', error);
+        // Handle error, e.g., display an error message to the user
+      }
     }
   };
 
@@ -63,14 +72,16 @@ const Home = () => {
     </div>
     </SignedIn>
     <SignedOut>
-      <div className="flex flex-col h-screen items-center justify-center">
-        <h1 className="text-2xl font-bold">Welcome to the Chat App</h1>
-        <p className="text-gray-500">Please sign in to continue.</p>
+      <div className="flex flex-col h-screen bg-gray-100">
+        <div className="flex flex-col flex-grow bg-white p-4">
+          <div className="flex flex-col flex-grow items-center justify-center">
+            <h1 className="text-2xl font-semibold">Sign in to Create Cover Letter</h1>
+          </div>
+        </div>
       </div>
-    </SignedOut>
+      </SignedOut>
     </>
-    
   );
 }
 
-export default Home
+export default Home;
