@@ -93,8 +93,18 @@ export const navLinks = [
       ],
     },
   ];
+
+  interface TransformationType {
+    type: string;
+    title: string;
+    subTitle: string;
+    config: {
+      restore: boolean;
+    };
+    icon: string;
+  }
   
-  export const transformationTypes = {
+  export const transformationTypes: { [key: string]: TransformationType } = {
     Profile: {
       type: "profile",
       title: "Add Profile",
@@ -126,11 +136,11 @@ export const navLinks = [
   };
   
   export const defaultValues = {
-    title: "",
-    aspectRatio: "",
-    color: "",
-    prompt: "",
+    name: "",
+    workExperience: "",
+    description: "",
     publicId: "",
   };
   
   export const creditFee = -1;
+

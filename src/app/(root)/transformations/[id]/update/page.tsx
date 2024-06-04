@@ -1,8 +1,16 @@
 import React from 'react'
+import Header from '@/components/shared/Header'
 
 const UpdateTransformationPage = () => {
+
   return (
-    <div>UpdateTransformationPage</div>
+    <>
+    <Header
+      title='Update Profile'
+      subtitle='Update your profile information'
+     />
+      
+    </>
   )
 }
 

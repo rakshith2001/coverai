@@ -25,6 +25,7 @@ const TransactionSchema = new Schema({
     ref: "User",
   },
 });
+/// Transaction model
 
 const Transaction = models?.Transaction || model("Transaction", TransactionSchema);
 

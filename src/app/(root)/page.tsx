@@ -34,7 +34,6 @@ const Home: React.FC = () => {
         }
       } catch (error) {
         console.error('Error sending message:', error);
-        // Handle error, e.g., display an error message to the user
       }
     }
   };
@@ -66,6 +65,7 @@ const Home: React.FC = () => {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
+                onKeyUp={(e) => e.key === 'Enter' && handleSend()}
                 placeholder="Type your message..."
                 className="flex-grow p-2 border rounded-l-md"
               />
