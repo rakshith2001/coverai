@@ -139,8 +139,8 @@ const TransformationForm = ({
                 <h2 className="text-2xl font-semibold">You already have a profile</h2>
                 <p className="mt-2">You can only have one profile at a time</p>
                 {profileId && (
-                    <Link href={`/transformations/${profileId}`} className="mt-4 text-blue-500">
-                        View Profile
+                    <Link href={`/transformations/${profileId}`} className="mt-4 ">
+                        <Button  className="mt-3   bg-blue-500 capitalize">Edit Profile</Button>
                     </Link>
                 )}
             </div>

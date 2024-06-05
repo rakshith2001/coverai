@@ -8,6 +8,7 @@ import { FaDownload } from 'react-icons/fa';
 interface Message {
   sender: 'user' | 'bot';
   text: string;
+  cols?: number; // Optional property for textarea cols
 }
 
 const Home: React.FC = () => {
@@ -84,6 +85,12 @@ const Home: React.FC = () => {
     }
   };
 
+  const handleEdit = (index: number, newText: string) => {
+    const updatedMessages = [...messages];
+    updatedMessages[index] = { ...updatedMessages[index], text: newText };
+    setMessages(updatedMessages);
+  };
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -101,7 +108,18 @@ const Home: React.FC = () => {
                     message.sender === 'user' ? 'bg-blue-100 self-end' : 'bg-gray-100 self-start'
                   }`}
                 >
-                  {message.text}
+                  {message.sender === 'bot' ? (
+                    <textarea
+                      value={message.text}
+                      onChange={(e) => handleEdit(index, e.target.value)}
+                      rows={Math.max(Math.ceil(message.text.length / 30), 1)} // Adjust based on character count
+                      cols={30} // Initial cols value
+                      className="w-full h-full resize-none"
+                      autoFocus // Focus on the input box
+                    />
+                  ) : (
+                    message.text
+                  )}
                 </div>
               ))}
               <div ref={messagesEndRef} />
