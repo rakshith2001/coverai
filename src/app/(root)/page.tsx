@@ -42,12 +42,27 @@ const Home: React.FC = () => {
     }
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     const doc = new jsPDF();
     const recentMessage = messages[messages.length - 1]?.text || 'No messages';
     doc.text(recentMessage, 10, 10);
     doc.save('cover_letter.pdf');
+  
+    try {
+      let req = await fetch('/api/update-credits', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!req.ok) {
+        throw new Error('Failed to update credits');
+      }
+    } catch (error) {
+      console.error('Error updating credits:', error);
+    }
   };
+  
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
