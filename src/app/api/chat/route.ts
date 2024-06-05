@@ -9,6 +9,7 @@ export async function POST(request: Request) {
   if(!userId) redirect('/sign-in');
 
   const user = await getUserById(userId);
+  
 
 
   const profile = await Profile.findOne({ userId: user._id});
@@ -18,11 +19,11 @@ export async function POST(request: Request) {
     });
   
   }
-
-
   const { message } = await request.json();
 
-  return new Response(JSON.stringify({ message: `you said ${message}` }), {
+
+
+  return new Response(JSON.stringify({ message: `you said "${message}" and your name is "${profile.name}" and workExperience is "${profile.workExperience}" and description is "${profile.description}"` }), {
     headers: { 'Content-Type': 'application/json' },
   });
   
