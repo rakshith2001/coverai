@@ -80,7 +80,8 @@ const UpdateProfile = ({ params: { id } }: SearchParamProps) => {
         description: "Your profile could not be updated.",
         duration: 5000,
         className: 'error-toast'
-      });
+      
+      })
     }
     
   }
