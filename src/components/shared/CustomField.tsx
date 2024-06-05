@@ -10,11 +10,7 @@ import {
   FormLabel,
 } from "../ui/form";
 
-const formSchema = z.object({
-  name: z.string().nonempty("Name is required"),
-  workExperience: z.string().nonempty("Work Experience is required"),
-  description: z.string().nonempty("Description is required"),
-})
+import { formSchema } from "./TransformationForm";
 
 type CustomFieldProps = {
   control: Control<z.infer<typeof formSchema>> | undefined;
