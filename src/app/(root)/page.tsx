@@ -3,8 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import jsPDF from 'jspdf';
-import {FaDownload} from 'react-icons/fa';
-
+import { FaDownload } from 'react-icons/fa';
 
 interface Message {
   sender: 'user' | 'bot';
@@ -16,12 +15,12 @@ const Home: React.FC = () => {
   const [input, setInput] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const handleSend = async () => {
+  const handleSend = async (): Promise<void> => {
     if (input.trim()) {
       setMessages([...messages, { sender: 'user', text: input }]);
       setInput('');
       try {
-        let req = await fetch('/api/chat', {
+        const req = await fetch('/api/chat', {
           method: 'POST',
           body: JSON.stringify({ message: input }),
           headers: {
@@ -29,7 +28,7 @@ const Home: React.FC = () => {
           },
         });
         if (req.ok) {
-          let res = await req.json();
+          const res = await req.json();
           setTimeout(() => {
             setMessages(prevMessages => [...prevMessages, { sender: 'bot', text: res.message }]);
           }, 1000);
@@ -42,14 +41,36 @@ const Home: React.FC = () => {
     }
   };
 
-  const handleDownload = async () => {
+  const handleDownload = async (): Promise<void> => {
     const doc = new jsPDF();
     const recentMessage = messages[messages.length - 1]?.text || 'No messages';
-    doc.text(recentMessage, 10, 10);
+
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 10;
+    const textWidth = pageWidth - margin * 2;
+    doc.setFont('helvetica', 'normal');
+
+    // Split text into lines that fit within the specified width
+    const lines = doc.splitTextToSize(recentMessage, textWidth);
+
+    doc.text('Cover Letter', 90, 20);
+
+    let y = 30; // Starting y position for the text
+    const lineHeight = 10; // Height between lines
+
+    lines.forEach((line: string) => {
+      if (y + lineHeight > doc.internal.pageSize.getHeight() - margin) {
+        doc.addPage(); // Add new page if text exceeds page height
+        y = margin; // Reset y position for the new page
+      }
+      doc.text(line, margin, y);
+      y += lineHeight;
+    });
+
     doc.save('cover_letter.pdf');
-  
+
     try {
-      let req = await fetch('/api/update-credits', {
+      const req = await fetch('/api/update-credits', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -62,7 +83,6 @@ const Home: React.FC = () => {
       console.error('Error updating credits:', error);
     }
   };
-  
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

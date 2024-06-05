@@ -24,17 +24,17 @@ export const navLinks = [
   export const plans = [
     {
       _id: 1,
-      name: "Free",
+      name: "Starter Pack",
       icon: "/assets/icons/free-plan.svg",
-      price: 0,
+      price: 10,
       credits: 20,
       inclusions: [
         {
-          label: "20 Free Credits",
+          label: "100 Free Credits",
           isIncluded: true,
         },
         {
-          label: "Basic Access to Services",
+          label: "Can Create 100 Cover Letters",
           isIncluded: true,
         },
         {
@@ -51,15 +51,15 @@ export const navLinks = [
       _id: 2,
       name: "Pro Package",
       icon: "/assets/icons/free-plan.svg",
-      price: 40,
-      credits: 120,
+      price: 20,
+      credits: 300,
       inclusions: [
         {
           label: "120 Credits",
           isIncluded: true,
         },
         {
-          label: "Full Access to Services",
+          label: "Can Create 100 Cover Letters",
           isIncluded: true,
         },
         {
@@ -73,18 +73,18 @@ export const navLinks = [
       ],
     },
     {
-      _id: 3,
-      name: "Premium Package",
+      _id: 2,
+      name: "Pro Package",
       icon: "/assets/icons/free-plan.svg",
-      price: 199,
-      credits: 2000,
+      price: 35,
+      credits: 600,
       inclusions: [
         {
-          label: "2000 Credits",
+          label: "600 Credits",
           isIncluded: true,
         },
         {
-          label: "Full Access to Services",
+          label: "Can Create 600 Cover Letters",
           isIncluded: true,
         },
         {
