@@ -24,17 +24,17 @@ export const navLinks = [
   export const plans = [
     {
       _id: 1,
-      name: "Starter Pack",
+      name: "Free",
       icon: "/assets/icons/free-plan.svg",
-      price: 10,
+      price: 0,
       credits: 20,
       inclusions: [
         {
-          label: "100 Free Credits",
+          label: "20 Free Credits",
           isIncluded: true,
         },
         {
-          label: "Can Create 100 Cover Letters",
+          label: "Basic Access to Services",
           isIncluded: true,
         },
         {
@@ -51,15 +51,15 @@ export const navLinks = [
       _id: 2,
       name: "Pro Package",
       icon: "/assets/icons/free-plan.svg",
-      price: 20,
-      credits: 300,
+      price: 40,
+      credits: 120,
       inclusions: [
         {
           label: "120 Credits",
           isIncluded: true,
         },
         {
-          label: "Can Create 100 Cover Letters",
+          label: "Full Access to Services",
           isIncluded: true,
         },
         {
@@ -73,18 +73,18 @@ export const navLinks = [
       ],
     },
     {
-      _id: 2,
-      name: "Pro Package",
+      _id: 3,
+      name: "Premium Package",
       icon: "/assets/icons/free-plan.svg",
-      price: 35,
-      credits: 600,
+      price: 199,
+      credits: 2000,
       inclusions: [
         {
-          label: "600 Credits",
+          label: "2000 Credits",
           isIncluded: true,
         },
         {
-          label: "Can Create 600 Cover Letters",
+          label: "Full Access to Services",
           isIncluded: true,
         },
         {
@@ -98,7 +98,6 @@ export const navLinks = [
       ],
     },
   ];
-
   interface TransformationType {
     type: string;
     title: string;
