@@ -37,7 +37,7 @@ import { aspectRatioOptions, creditFee, defaultValues, transformationTypes } fro
 import { Input } from "@/components/ui/input"
 import { Description } from "@radix-ui/react-dialog"
 
-export const formSchema = z.object({
+const formSchema = z.object({
     name: z.string().nonempty("Name is required"),
     workExperience: z.string().nonempty("Work Experience is required"),
     description: z.string().nonempty("Description is required"),

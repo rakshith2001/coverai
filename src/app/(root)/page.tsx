@@ -1,6 +1,10 @@
 "use client"
+
 import React, { useState, useEffect, useRef } from 'react';
 import { SignedIn, SignedOut } from "@clerk/nextjs";
+import jsPDF from 'jspdf';
+import {FaDownload} from 'react-icons/fa';
+
 
 interface Message {
   sender: 'user' | 'bot';
@@ -38,6 +42,13 @@ const Home: React.FC = () => {
     }
   };
 
+  const handleDownload = () => {
+    const doc = new jsPDF();
+    const recentMessage = messages[messages.length - 1]?.text || 'No messages';
+    doc.text(recentMessage, 10, 10);
+    doc.save('cover_letter.pdf');
+  };
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -71,6 +82,9 @@ const Home: React.FC = () => {
               />
               <button onClick={handleSend} className="p-2 bg-blue-500 text-white rounded-r-md">
                 Send
+              </button>
+              <button onClick={handleDownload} className="ml-2 p-2 bg-green-500 text-white rounded-md">
+                <FaDownload />
               </button>
             </div>
           </div>
