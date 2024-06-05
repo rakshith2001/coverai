@@ -18,7 +18,7 @@ const User = async ({ searchParams }: SearchParamProps) => {
 
       <section className="profile">
         <div className="profile-balance">
-          <p className="p-14-medium md:p-16-medium">CREDITS AVAILABLE</p>
+          <p className="p-14-medium md:p-16-medium">CREDITS AVAILABLEs</p>
           <div className="mt-4 flex items-center gap-4">
             <Image
               src="/assets/icons/coins.svg"
