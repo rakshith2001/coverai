@@ -47,7 +47,7 @@ const User: React.FC<UserProps> = ({ userId }) => {
 
   return (
     <>
-      <Header title="Profile" />
+      <Header title="User" />
       <section className="profile">
         <div className="profile-balance">
           <p className="p-14-medium md:p-16-medium">CREDITS AVAILABLE</p>
