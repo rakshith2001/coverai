@@ -60,33 +60,34 @@ const GptInterface: React.FC<GptInterfaceProps> = ({ initialCreditBalance }) => 
       setShowInsufficientCreditsModal(true);
       return;
     }
-
+  
     const doc = new jsPDF();
     const recentMessage = messages[messages.length - 1]?.text || 'No messages';
-
+  
     const pageWidth = doc.internal.pageSize.getWidth();
     const margin = 10;
     const textWidth = pageWidth - margin * 2;
     doc.setFont('helvetica', 'normal');
-
+  
     // Split text into lines that fit within the specified width
-    const lines = doc.splitTextToSize(recentMessage, textWidth);
-
+    const lines: string[] = doc.splitTextToSize(recentMessage, textWidth);
+  
     doc.text('Cover Letter', 90, 20);
-
+  
     let y = 30; // Starting y position for the text
     const lineHeight = 10; // Height between lines
-
-    lines.forEach((line: string) => {
+  
+    lines.forEach((line:string) => {
       if (y + lineHeight > doc.internal.pageSize.getHeight() - margin) {
         doc.addPage(); // Add new page if text exceeds page height
         y = margin; // Reset y position for the new page
       }
       doc.text(line, margin, y);
+      y += lineHeight; // Move y position for the next line
     });
-
+  
     doc.save('cover_letter.pdf');
-
+  
     try {
       await updateCredits('user-id', -creditFee); // Deduct credits
       setCreditBalance(creditBalance - creditFee);
@@ -94,6 +95,7 @@ const GptInterface: React.FC<GptInterfaceProps> = ({ initialCreditBalance }) => 
       console.error('Error updating credits:', error);
     }
   };
+  
 
   const handleEdit = (index: number, newText: string) => {
     const updatedMessages = [...messages];
