@@ -142,3 +142,22 @@ declare type TransformedImageProps = {
   hasDownload?: boolean;
   setIsTransforming?: React.Dispatch<React.SetStateAction<boolean>>;
 };
+
+import { IncomingMessage } from 'http';
+
+declare module 'http' {
+  interface IncomingMessage {
+    session: {
+      userId?: string; // Adjust the type based on your actual session structure
+      // Include other session properties if needed
+    };
+  }
+}
+
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  creditBalance: number;
+  // Add other properties as needed
+}

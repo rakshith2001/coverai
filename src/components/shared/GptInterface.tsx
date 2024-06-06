@@ -14,20 +14,35 @@ interface Message {
   cols?: number; // Optional property for textarea cols
 }
 
-interface GptInterfaceProps {
-  initialCreditBalance: number;
-}
-
-const GptInterface: React.FC<GptInterfaceProps> = ({ initialCreditBalance }) => {
+const GptInterface: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState<string>('');
-  const [creditBalance, setCreditBalance] = useState<number>(initialCreditBalance);
+  const [creditBalance, setCreditBalance] = useState<number>(0);
   const [showInsufficientCreditsModal, setShowInsufficientCreditsModal] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [isClient, setIsClient] = useState(false)
+  const [isClient, setIsClient] = useState(false);
+
   useEffect(() => {
-    setIsClient(true)
-  }, [])
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    const fetchCreditBalance = async () => {
+      try {
+        const res = await fetch('/api/get-user');
+        if (res.ok) {
+          const data = await res.json();
+          setCreditBalance(data.creditBalance);
+        } else {
+          throw new Error('Failed to fetch credit balance.');
+        }
+      } catch (error) {
+        console.error('Error fetching credit balance:', error);
+      }
+    };
+
+    fetchCreditBalance();
+  }, []);
 
   const handleSend = async (): Promise<void> => {
     if (input.trim()) {
@@ -60,23 +75,23 @@ const GptInterface: React.FC<GptInterfaceProps> = ({ initialCreditBalance }) => 
       setShowInsufficientCreditsModal(true);
       return;
     }
-  
+
     const doc = new jsPDF();
     const recentMessage = messages[messages.length - 1]?.text || 'No messages';
-  
+
     const pageWidth = doc.internal.pageSize.getWidth();
     const margin = 10;
     const textWidth = pageWidth - margin * 2;
     doc.setFont('helvetica', 'normal');
-  
+
     // Split text into lines that fit within the specified width
     const lines: string[] = doc.splitTextToSize(recentMessage, textWidth);
-  
+
     doc.text('Cover Letter', 90, 20);
-  
+
     let y = 30; // Starting y position for the text
     const lineHeight = 10; // Height between lines
-  
+
     lines.forEach((line:string) => {
       if (y + lineHeight > doc.internal.pageSize.getHeight() - margin) {
         doc.addPage(); // Add new page if text exceeds page height
@@ -85,9 +100,9 @@ const GptInterface: React.FC<GptInterfaceProps> = ({ initialCreditBalance }) => 
       doc.text(line, margin, y);
       y += lineHeight; // Move y position for the next line
     });
-  
+
     doc.save('cover_letter.pdf');
-  
+
     try {
       await updateCredits('user-id', -creditFee); // Deduct credits
       setCreditBalance(creditBalance - creditFee);
@@ -95,7 +110,6 @@ const GptInterface: React.FC<GptInterfaceProps> = ({ initialCreditBalance }) => 
       console.error('Error updating credits:', error);
     }
   };
-  
 
   const handleEdit = (index: number, newText: string) => {
     const updatedMessages = [...messages];
@@ -112,7 +126,6 @@ const GptInterface: React.FC<GptInterfaceProps> = ({ initialCreditBalance }) => 
   return (
     <>
       <SignedIn>
-        
         { isClient && creditBalance < Math.abs(creditFee) && <InsufficientCreditsModal />}
         <div className="flex flex-col h-screen bg-gray-100">
           <div className="flex flex-col flex-grow bg-white p-4">
