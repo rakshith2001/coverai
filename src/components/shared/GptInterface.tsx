@@ -1,5 +1,4 @@
-"use client";
-
+"use client"
 import React, { useState, useEffect, useRef } from 'react';
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import jsPDF from 'jspdf';
@@ -12,16 +11,16 @@ import Landing from './Landing';
 interface Message {
   sender: 'user' | 'bot';
   text: string;
-  cols?: number; // Optional property for textarea cols
+  cols?: number;
 }
 
 const GptInterface: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState<string>('');
-  const [creditBalance, setCreditBalance] = useState<number>(0);
-  const [showInsufficientCreditsModal, setShowInsufficientCreditsModal] = useState<boolean>(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [creditBalance, setCreditBalance] = useState<number | null>(null);
   const [isClient, setIsClient] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsClient(true);
@@ -30,7 +29,7 @@ const GptInterface: React.FC = () => {
   useEffect(() => {
     const fetchCreditBalance = async () => {
       try {
-        const res = await fetch('/api/get-user');
+        const res = await fetch('/api/get-user-gpt');
         if (res.ok) {
           const data = await res.json();
           setCreditBalance(data.creditBalance);
@@ -39,6 +38,8 @@ const GptInterface: React.FC = () => {
         }
       } catch (error) {
         console.error('Error fetching credit balance:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -72,9 +73,8 @@ const GptInterface: React.FC = () => {
   };
 
   const handleDownload = async (): Promise<void> => {
-    if (creditBalance < Math.abs(creditFee)) {
-      setShowInsufficientCreditsModal(true);
-      return;
+    if (creditBalance !== null && creditBalance < Math.abs(creditFee)) {
+      return; // Don't proceed with download if credits are insufficient
     }
 
     const doc = new jsPDF();
@@ -93,7 +93,7 @@ const GptInterface: React.FC = () => {
     let y = 30; // Starting y position for the text
     const lineHeight = 10; // Height between lines
 
-    lines.forEach((line:string) => {
+    lines.forEach((line: string) => {
       if (y + lineHeight > doc.internal.pageSize.getHeight() - margin) {
         doc.addPage(); // Add new page if text exceeds page height
         y = margin; // Reset y position for the new page
@@ -106,7 +106,9 @@ const GptInterface: React.FC = () => {
 
     try {
       await updateCredits('user-id', -creditFee); // Deduct credits
-      setCreditBalance(creditBalance - creditFee);
+      if (creditBalance !== null) {
+        setCreditBalance(creditBalance - creditFee);
+      }
     } catch (error) {
       console.error('Error updating credits:', error);
     }
@@ -126,57 +128,69 @@ const GptInterface: React.FC = () => {
 
   return (
     <>
-      <SignedIn>
-        { isClient && creditBalance < Math.abs(creditFee) && <InsufficientCreditsModal />}
-        <div className="flex flex-col h-screen bg-gray-100">
-          <div className="flex flex-col flex-grow bg-white p-4">
-            <div className="flex flex-col flex-grow overflow-y-auto space-y-2">
-              {messages.map((message, index) => (
-                <div
-                  key={index}
-                  className={`p-2 rounded-md max-w-xs ${
-                    message.sender === 'user' ? 'bg-blue-100 self-end' : 'bg-gray-100 self-start'
+      {isLoading ? (
+        // Show spinner loader while fetching credit balance
+        <div className="flex justify-center items-center h-screen">
+          <div className="loader"></div>
+        </div>
+      ) : creditBalance !== null && creditBalance < Math.abs(creditFee) ? (
+        // Show insufficient funds modal if credit balance is insufficient
+        <InsufficientCreditsModal />
+      ) : (
+        // Show form if credit balance is sufficient
+        <SignedIn>
+          <div className="flex flex-col h-screen bg-gray-100">
+            <div className="flex flex-col flex-grow bg-white p-4">
+              <div className="flex flex-col flex-grow overflow-y-auto space-y-2">
+                {messages.map((message, index) => (
+                  <div
+                    key={index}
+                    className={`p-2 rounded-md max-w-xs ${
+                      message.sender === 'user' ? 'bg-blue-100 self-end' : 'bg-gray-100 self-start'
+                    }`}
+                  >
+                    {message.sender === 'bot' ? (
+                      <textarea
+                        value={message.text}
+                        onChange={(e) => handleEdit(index, e.target.value)}
+                        rows={Math.max(Math.ceil(message.text.length / 30), 1)} // Adjust based on character count
+                        cols={30} // Initial cols value
+                        className="w-full h-full resize-none"
+                        autoFocus // Focus on the input box
+                      />
+                    ) : (
+                      message.text
+                    )}
+                  </div>
+                ))}
+                <div ref={messagesEndRef} />
+              </div>
+              <div className="flex p-4 border-t border-gray-200">
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyUp={(e) => e.key === 'Enter' && handleSend()}
+                  placeholder="Type your message..."
+                  className="flex-grow p-2 border rounded-l-md"
+                />
+                <button onClick={handleSend} className="p-2 bg-blue-500 text-white rounded-r-md">
+                  Send
+                </button>
+                <button
+                  onClick={handleDownload}
+                  className={`ml-2 p-2 bg-green-500 text-white rounded-md ${
+                    isDownloadDisabled ? 'opacity-50 cursor-not-allowed' : ''
                   }`}
+                  disabled={isDownloadDisabled}
                 >
-                  {message.sender === 'bot' ? (
-                    <textarea
-                      value={message.text}
-                      onChange={(e) => handleEdit(index, e.target.value)}
-                      rows={Math.max(Math.ceil(message.text.length / 30), 1)} // Adjust based on character count
-                      cols={30} // Initial cols value
-                      className="w-full h-full resize-none"
-                      autoFocus // Focus on the input box
-                    />
-                  ) : (
-                    message.text
-                  )}
-                </div>
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
-            <div className="flex p-4 border-t border-gray-200">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyUp={(e) => e.key === 'Enter' && handleSend()}
-                placeholder="Type your message..."
-                className="flex-grow p-2 border rounded-l-md"
-              />
-              <button onClick={handleSend} className="p-2 bg-blue-500 text-white rounded-r-md">
-                Send
-              </button>
-              <button 
-                onClick={handleDownload} 
-                className={`ml-2 p-2 bg-green-500 text-white rounded-md ${isDownloadDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-                disabled={isDownloadDisabled}
-              >
-                <FaDownload />
-              </button>
+                  <FaDownload />
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      </SignedIn>
+        </SignedIn>
+      )}
       <SignedOut>
         <Landing />
       </SignedOut>
