@@ -153,11 +153,3 @@ declare module 'http' {
     };
   }
 }
-
-export interface User {
-  id: string;
-  username: string;
-  email: string;
-  creditBalance: number;
-  // Add other properties as needed
-}

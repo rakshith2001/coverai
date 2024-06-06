@@ -7,6 +7,7 @@ import { FaDownload } from 'react-icons/fa';
 import { creditFee } from '@/constants';
 import { updateCredits } from '@/lib/actions/user.actions';
 import { InsufficientCreditsModal } from '@/components/shared/InsufficientCreditsModal';
+import Landing from './Landing';
 
 interface Message {
   sender: 'user' | 'bot';
@@ -177,13 +178,7 @@ const GptInterface: React.FC = () => {
         </div>
       </SignedIn>
       <SignedOut>
-        <div className="flex flex-col h-screen bg-gray-100">
-          <div className="flex flex-col flex-grow bg-white p-4">
-            <div className="flex flex-col flex-grow items-center justify-center">
-              <h1 className="text-2xl font-semibold">Sign in to Create Cover Letter</h1>
-            </div>
-          </div>
-        </div>
+        <Landing />
       </SignedOut>
     </>
   );

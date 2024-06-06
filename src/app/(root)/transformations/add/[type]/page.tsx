@@ -5,6 +5,7 @@ import { auth } from '@clerk/nextjs';
 import { transformationTypes } from '@/constants'
 import { redirect } from 'next/navigation';
 import TransformationForm from '@/components/shared/TransformationForm';
+import { SearchParamProps, TransformationTypeKey } from '@/types';
 
 
 const AddProfilePage = async ({ params: { type } }: SearchParamProps) => {
@@ -28,12 +29,7 @@ const AddProfilePage = async ({ params: { type } }: SearchParamProps) => {
           userId={user._id}
           type={transformation.type as TransformationTypeKey}
           creditBalance={user.creditBalance}
-          
         />
-
-        
-
-      
       </section>
 
     </>
