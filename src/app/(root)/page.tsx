@@ -95,6 +95,8 @@ const Home: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const isDownloadDisabled = messages.length === 0 || messages[messages.length - 1]?.sender !== 'bot';
+
   return (
     <>
       <SignedIn>
@@ -136,7 +138,11 @@ const Home: React.FC = () => {
               <button onClick={handleSend} className="p-2 bg-blue-500 text-white rounded-r-md">
                 Send
               </button>
-              <button onClick={handleDownload} className="ml-2 p-2 bg-green-500 text-white rounded-md">
+              <button 
+                onClick={handleDownload} 
+                className={`ml-2 p-2 bg-green-500 text-white rounded-md ${isDownloadDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                disabled={isDownloadDisabled}
+              >
                 <FaDownload />
               </button>
             </div>
